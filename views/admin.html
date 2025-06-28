@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>एडमिन डैशबोर्ड</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SortableJS for Drag-and-Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        .ghost-class {
+            opacity: 0.4;
+            background: #c8ebfb;
+        }
+        .sortable-drag {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4 md:p-8">
+        <h1 class="text-3xl font-bold mb-6">एडमिन डैशबोर्ड</h1>
+
+        <!-- Section 1: Add New Tool -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-2xl font-semibold mb-4">नया टूल जोड़ें (Add New Tool)</h2>
+            <form id="add-tool-form" action="/admin/add-tool" method="POST" enctype="multipart/form-data">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="toolName" class="block text-sm font-medium text-gray-700">टूल का नाम (Tool Name)</label>
+                        <input type="text" id="toolName" name="toolName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700">कैटेगरी (Category)</label>
+                        <select id="category" name="category" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <!-- Categories will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="description" class="block text-sm font-medium text-gray-700">विवरण (Description)</label>
+                        <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+                    </div>
+                     <div>
+                        <label for="order" class="block text-sm font-medium text-gray-700">क्रम संख्या (Order Number) - वैकल्पिक</label>
+                        <input type="number" id="order" name="order" placeholder="खाली छोड़ने पर अंत में जोड़ा जाएगा" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="toolFile" class="block text-sm font-medium text-gray-700">टूल फाइल (.html या .zip)</label>
+                        <input type="file" id="toolFile" name="toolFile" required accept=".html,.zip" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100">
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button type="submit" class="w-full md:w-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        टूल जोड़ें
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Section 2: Manage Existing Tools -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">मौजूदा टूल्स मैनेज करें (Manage Existing Tools)</h2>
+            <p class="text-sm text-gray-600 mb-4">टूल्स को खींचकर (drag) उनका क्रम बदलें। बदलावों को सेव करना न भूलें।</p>
+            <div id="manage-tools-list" class="space-y-3">
+                <!-- Tool list will be populated by JS -->
+                <p>लोड हो रहा है...</p>
+            </div>
+            <div class="mt-6">
+                <button id="save-changes-btn" class="w-full md:w-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    बदलाव सेव करें (Save Changes)
+                </button>
+                 <span id="save-status" class="ml-4 text-sm font-medium"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allToolsData = []; // Store the full tool data
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderTools();
+            
+            const saveBtn = document.getElementById('save-changes-btn');
+            saveBtn.addEventListener('click', saveChanges);
+
+            // Handle success message on redirect
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success')) {
+                const form = document.getElementById('add-tool-form');
+                const successMsg = document.createElement('p');
+                successMsg.textContent = 'टूल सफलतापूर्वक जोड़ा गया!';
+                successMsg.className = 'text-green-600 mt-2';
+                form.prepend(successMsg);
+                setTimeout(() => successMsg.remove(), 4000);
+                 // Clean URL
+                window.history.replaceState({}, document.title, "/admin");
+            }
+        });
+
+        async function fetchAndRenderTools() {
+            try {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                allToolsData = data.tools;
+
+                // Populate category dropdown
+                const categorySelect = document.getElementById('category');
+                categorySelect.innerHTML = data.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+
+                // Render manage list
+                renderManageList(allToolsData);
+
+                // Initialize SortableJS
+                const listEl = document.getElementById('manage-tools-list');
+                Sortable.create(listEl, {
+                    animation: 150,
+                    ghostClass: 'ghost-class',
+                    handle: '.drag-handle',
+                });
+
+            } catch (error) {
+                console.error('Failed to load data:', error);
+                document.getElementById('manage-tools-list').innerHTML = '<p class="text-red-500">डेटा लोड करने में विफल।</p>';
+            }
+        }
+        
+        function renderManageList(tools) {
+            const listContainer = document.getElementById('manage-tools-list');
+            listContainer.innerHTML = ''; // Clear previous list
+            
+            if (tools.length === 0) {
+                 listContainer.innerHTML = '<p>कोई टूल नहीं मिला।</p>';
+                 return;
+            }
+
+            tools.sort((a,b) => a.order - b.order).forEach(tool => {
+                const toolItem = document.createElement('div');
+                toolItem.className = 'flex items-center justify-between bg-gray-50 p-3 rounded-md border';
+                toolItem.dataset.id = tool.id; // Store full data as a string
+                toolItem.dataset.toolData = JSON.stringify(tool);
+
+                toolItem.innerHTML = `
+                    <div class="flex items-center">
+                        <svg class="drag-handle w-6 h-6 text-gray-400 cursor-move mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                        <div>
+                            <p class="font-semibold">${tool.name}</p>
+                            <p class="text-sm text-gray-500">${tool.category} | क्रम: ${tool.order}</p>
+                        </div>
+                    </div>
+                    <button class="delete-btn text-red-500 hover:text-red-700 font-semibold" data-id="${tool.id}" data-foldername="${tool.folderName}">डिलीट</button>
+                `;
+                listContainer.appendChild(toolItem);
+            });
+
+            // Add delete event listeners
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', handleDelete);
+            });
+        }
+        
+        function handleDelete(event) {
+            const button = event.currentTarget;
+            const toolId = button.dataset.id;
+            const toolName = button.closest('.flex').querySelector('.font-semibold').textContent;
+
+            if (confirm(`क्या आप वाकई "${toolName}" टूल को डिलीट करना चाहते हैं? यह एक्शन वापस नहीं लिया जा सकता।`)) {
+                // Remove from the local array
+                allToolsData = allToolsData.filter(tool => tool.id != toolId);
+                // Re-render the list immediately for better UX
+                renderManageList(allToolsData);
+                // Now, save the changes to the server
+                saveChanges();
+            }
+        }
+
+
+        async function saveChanges() {
+            const statusEl = document.getElementById('save-status');
+            statusEl.textContent = 'सेव हो रहा है...';
+            statusEl.className = 'ml-4 text-sm font-medium text-blue-600';
+
+            const listItems = document.querySelectorAll('#manage-tools-list > div');
+            const updatedTools = [];
+            
+            listItems.forEach((item, index) => {
+                const toolData = JSON.parse(item.dataset.toolData);
+                toolData.order = index + 1; // Update order based on new position
+                updatedTools.push(toolData);
+            });
+            
+            try {
+                const response = await fetch('/admin/update-tools', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tools: updatedTools })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Server responded with an error.');
+                }
+                
+                const result = await response.json();
+                if(result.success) {
+                    statusEl.textContent = 'बदलाव सफलतापूर्वक सेव हो गए!';
+                    statusEl.className = 'ml-4 text-sm font-medium text-green-600';
+                    // Update the main data array and re-render to show correct order numbers
+                    allToolsData = updatedTools;
+                    renderManageList(allToolsData);
+                } else {
+                    throw new Error(result.message || 'Failed to save.');
+                }
+
+            } catch (error) {
+                console.error('Failed to save changes:', error);
+                statusEl.textContent = 'सेव करने में विफल!';
+                statusEl.className = 'ml-4 text-sm font-medium text-red-600';
+            }
+            
+            setTimeout(() => statusEl.textContent = '', 3000);
+        }
+    </script>
+</body>
+</html>

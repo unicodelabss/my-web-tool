@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>वेब टूल्स कलेक्शन</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">हमारे वेब टूल्स</h1>
+            <p class="mt-4 text-lg text-gray-600">आपके दैनिक कार्यों को आसान बनाने के लिए उपयोगी उपकरणों का संग्रह।</p>
+        </header>
+
+        <main id="tools-container">
+            <!-- टूल्स यहां JavaScript द्वारा लोड किए जाएंगे -->
+            <div class="text-center text-gray-500">
+                <p>लोड हो रहा है...</p>
+            </div>
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-200">
+            <p class="text-gray-500">© 2024 आपकी वेबसाइट का नाम। सर्वाधिकार सुरक्षित।</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('tools-container');
+            
+            try {
+                const response = await fetch('/api/data');
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const data = await response.json();
+
+                container.innerHTML = ''; // लोडिंग मैसेज हटाएं
+
+                if (!data.tools || data.tools.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-600">अभी कोई टूल उपलब्ध नहीं है।</p>';
+                    return;
+                }
+
+                data.categories.forEach(category => {
+                    const categoryTools = data.tools
+                        .filter(tool => tool.category === category)
+                        .sort((a, b) => a.order - b.order);
+
+                    if (categoryTools.length > 0) {
+                        // कैटेगरी सेक्शन बनाएं
+                        const categorySection = document.createElement('section');
+                        categorySection.className = 'mb-12';
+
+                        // कैटेगरी का शीर्षक
+                        const categoryTitle = document.createElement('h2');
+                        categoryTitle.className = 'text-2xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-6';
+                        categoryTitle.textContent = category;
+                        categorySection.appendChild(categoryTitle);
+
+                        // टूल्स का ग्रिड
+                        const grid = document.createElement('div');
+                        grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6';
+                        
+                        categoryTools.forEach(tool => {
+                            const cardLink = document.createElement('a');
+                            cardLink.href = `/${tool.folderName}/`; // फोल्डर के अंदर index.html अपने आप खुल जाएगा
+                            cardLink.className = 'block group';
+
+                            const card = document.createElement('div');
+                            card.className = 'bg-white rounded-lg shadow-md p-6 h-full flex flex-col justify-between transform transition-transform duration-300 hover:scale-105 hover:shadow-xl';
+                            
+                            const cardContent = `
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900 group-hover:text-blue-600">${tool.name}</h3>
+                                    <p class="text-gray-600 mt-2 text-sm">${tool.description}</p>
+                                </div>
+                                <div class="text-right mt-4">
+                                    <span class="text-blue-500 font-semibold">खोलें →</span>
+                                </div>
+                            `;
+                            card.innerHTML = cardContent;
+                            cardLink.appendChild(card);
+                            grid.appendChild(cardLink);
+                        });
+
+                        categorySection.appendChild(grid);
+                        container.appendChild(categorySection);
+                    }
+                });
+
+            } catch (error) {
+                console.error('Failed to fetch tools:', error);
+                container.innerHTML = '<p class="text-center text-red-500">टूल्स लोड करने में विफल। कृपया बाद में प्रयास करें।</p>';
+            }
+        });
+    </script>
+
+</body>
+</html>
