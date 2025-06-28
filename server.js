@@ -13,7 +13,8 @@ const PORT = process.env.PORT || 3000;
 
 // Render.com परसिस्टेंट डिस्क के लिए पाथ सेट करना
 // यह लाइन Render पर डिप्लॉयमेंट के लिए बहुत ज़रूरी है।
-const DATA_DIR = process.env.RENDER_DISK_PATH || path.join(__dirname, 'data');
+// यह लाइन किसी भी प्लेटफॉर्म पर काम करेगी जहाँ DATA_DIR एनवायरनमेंट वेरिएबल सेट हो
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const TOOLS_DIR = path.join(DATA_DIR, 'tools');
 const DATA_FILE_PATH = path.join(DATA_DIR, 'tools-data.json');
 
