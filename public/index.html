@@ -4,288 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ultimate Web Tools | A New Experience</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- tsParticles for Background Animation -->
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.9.3/tsparticles.bundle.min.js"></script>
-    
-    <!-- Vanilla-Tilt.js for 3D Card Effect -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
-
     <style>
-        /* === Base Styles & Fonts === */
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #1f2937;
-            --card-bg: #ffffff;
-            --header-bg: rgba(255, 255, 255, 0.8);
-            --subtle-text: #6b7280;
-            --border-color: #e5e7eb;
-            --accent-gradient: linear-gradient(to right, #3b82f6, #8b5cf6);
-        }
-
-        html.dark {
-            --bg-color: #111827;
-            --text-color: #f3f4f6;
-            --card-bg: #1f2937;
-            --header-bg: rgba(17, 24, 39, 0.8);
-            --subtle-text: #9ca3af;
-            --border-color: #374151;
-            --accent-gradient: linear-gradient(to right, #60a5fa, #a78bfa);
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.5s ease, color 0.5s ease;
-        }
-
-        #particles-js {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-        }
-        
-        /* === Gradient Text === */
-        .gradient-text {
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* === Scroll-triggered Animations === */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .animate-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* === Active Header Link === */
-        .category-link.active {
-            background: var(--accent-gradient);
-            color: white;
-        }
+        :root { --bg-color: #ffffff; --text-color: #1f2937; --card-bg: #ffffff; --header-bg: rgba(255, 255, 255, 0.8); --subtle-text: #6b7280; --border-color: #e5e7eb; --accent-gradient: linear-gradient(to right, #3b82f6, #8b5cf6); }
+        html.dark { --bg-color: #111827; --text-color: #f3f4f6; --card-bg: #1f2937; --header-bg: rgba(17, 24, 39, 0.8); --subtle-text: #9ca3af; --border-color: #374151; --accent-gradient: linear-gradient(to right, #60a5fa, #a78bfa); }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.5s ease, color 0.5s ease; }
+        #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; }
+        .gradient-text { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+        .category-link.active { background: var(--accent-gradient); color: white; }
     </style>
 </head>
 <body class="relative">
-
-    <!-- Particle Background Container -->
     <div id="particles-js"></div>
-
-    <!-- Header / Navigation -->
     <header class="sticky top-0 z-50 w-full backdrop-blur-lg" style="background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); transition: background-color 0.5s ease, border-color 0.5s ease;">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <a href="#" class="text-2xl font-bold" style="color: var(--text-color);">My<span class="gradient-text">Tools</span></a>
-                
-                <!-- Dynamic Category Navigation -->
-                <nav id="category-nav" class="hidden md:flex items-center space-x-2 overflow-x-auto py-2">
-                    <!-- Categories will be injected here by JS -->
-                </nav>
-
-                <!-- Dark Mode Toggle -->
-                <button id="theme-toggle" class="p-2 rounded-full focus:outline-none" style="color: var(--subtle-text);">
-                    <svg id="theme-toggle-dark-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                    <svg id="theme-toggle-light-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 011.414 0l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1z"></path></svg>
-                </button>
-            </div>
-        </div>
+        <div class="container mx-auto px-4"><div class="flex items-center justify-between h-20"><a href="#" class="text-2xl font-bold" style="color: var(--text-color);">My<span class="gradient-text">Tools</span></a><nav id="category-nav" class="hidden md:flex items-center space-x-2 overflow-x-auto py-2"></nav><button id="theme-toggle" class="p-2 rounded-full focus:outline-none" style="color: var(--subtle-text);"><svg id="theme-toggle-dark-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg><svg id="theme-toggle-light-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 011.414 0l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1z"></path></svg></button></div></div>
     </header>
-
-    <!-- Main Content -->
     <main class="container mx-auto px-4 py-16 md:py-24 relative z-10">
-        <!-- Hero Section -->
-        <section class="text-center mb-24">
-            <h1 id="typing-headline" class="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4" style="color: var(--text-color);"></h1>
-            <p class="text-lg md:text-xl max-w-3xl mx-auto" style="color: var(--subtle-text);">
-                Smart, fast, and reliable tools for all your digital tasks, all in one place.
-            </p>
-        </section>
-
-        <!-- Tools Container -->
-        <div id="tools-container">
-            <div class="flex justify-center items-center h-32">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                <p class="ml-4 text-lg" style="color: var(--subtle-text);">Loading Tools...</p>
-            </div>
-        </div>
+        <section class="text-center mb-24"><h1 id="typing-headline" class="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4" style="color: var(--text-color);"></h1><p class="text-lg md:text-xl max-w-3xl mx-auto" style="color: var(--subtle-text);">Smart, fast, and reliable tools for all your digital tasks, all in one place.</p></section>
+        <div id="tools-container"><div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div><p class="ml-4 text-lg" style="color: var(--subtle-text);">Loading Tools...</p></div></div>
     </main>
-    
-    <!-- Footer -->
     <footer class="py-8 relative z-10" style="background-color: var(--card-bg); border-top: 1px solid var(--border-color); transition: background-color 0.5s ease, border-color 0.5s ease;">
-        <div class="container mx-auto px-4 text-center" style="color: var(--subtle-text);">
-            <p>© 2024 Your Website Name. All Rights Reserved.</p>
-        </div>
+        <div class="container mx-auto px-4 text-center" style="color: var(--subtle-text);"><p>© 2024 Your Website Name. All Rights Reserved.</p></div>
     </footer>
-
     <script>
-        // === DARK/LIGHT MODE LOGIC ===
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const darkIcon = document.getElementById('theme-toggle-dark-icon');
-        const lightIcon = document.getElementById('theme-toggle-light-icon');
-
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            lightIcon.classList.remove('hidden');
-        } else {
-            document.documentElement.classList.remove('dark');
-            darkIcon.classList.remove('hidden');
-        }
-
-        themeToggleBtn.addEventListener('click', () => {
-            darkIcon.classList.toggle('hidden');
-            lightIcon.classList.toggle('hidden');
-            document.documentElement.classList.toggle('dark');
-            const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-            localStorage.setItem('color-theme', theme);
-        });
-
-        // === TYPING EFFECT LOGIC ===
-        const headlineText = "The Future of Web Tools is Here.";
-        const headlineEl = document.getElementById('typing-headline');
-        let charIndex = 0;
-
-        function type() {
-            if (charIndex < headlineText.length) {
-                headlineEl.textContent += headlineText.charAt(charIndex);
-                charIndex++;
-                setTimeout(type, 100);
-            }
-        }
-        
-        // === MAIN DATA FETCHING & RENDERING LOGIC ===
-        document.addEventListener('DOMContentLoaded', () => {
-            type(); 
-            
-            fetch('/api/data').then(res => res.json()).then(data => {
-                const container = document.getElementById('tools-container');
-                container.innerHTML = ''; 
-
-                if (!data.tools || data.tools.length === 0) {
-                    container.innerHTML = `<div class="text-center p-8 rounded-lg" style="background-color: var(--card-bg); border: 1px solid var(--border-color);"><p class="text-lg">No tools available yet. Please add some from the admin panel.</p></div>`;
-                    return;
-                }
-                
-                populateHeader(data.categories, data.tools);
-                renderTools(data.categories, data.tools, container);
-                initScrollAnimations();
-                VanillaTilt.init(document.querySelectorAll(".tool-card"), { max: 15, speed: 400, glare: true, "max-glare": 0.5 });
-            }).catch(error => {
-                console.error('Failed to fetch tools:', error);
-                document.getElementById('tools-container').innerHTML = `<div class="text-center p-8 rounded-lg bg-red-100 text-red-700"><p class="text-lg">Failed to load tools. Please try again later.</p></div>`;
-            });
-        });
-
-        function populateHeader(categories, allTools) {
-            const navContainer = document.getElementById('category-nav');
-            categories.forEach(category => {
-                if (allTools.some(tool => tool.category === category)) {
-                    const categoryId = 'category-' + category.replace(/\s+/g, '-');
-                    const link = document.createElement('a');
-                    link.href = `#${categoryId}`;
-                    link.textContent = category;
-                    link.className = "category-link px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300";
-                    link.style.color = "var(--subtle-text)";
-                    link.addEventListener('mouseover', e => e.target.style.color = 'var(--text-color)');
-                    link.addEventListener('mouseout', e => { if (!e.target.classList.contains('active')) { e.target.style.color = 'var(--subtle-text)'; } });
-                    navContainer.appendChild(link);
-                }
-            });
-        }
-        
-        function renderTools(categories, allTools, container) {
-            categories.forEach(category => {
-                const categoryTools = allTools.filter(tool => tool.category === category).sort((a, b) => a.order - b.order);
-                if (categoryTools.length > 0) {
-                    const categoryId = 'category-' + category.replace(/\s+/g, '-');
-                    const section = document.createElement('section');
-                    section.id = categoryId;
-                    section.className = 'mb-20 animate-on-scroll';
-                    section.innerHTML = `<h2 class="text-3xl font-bold mb-8">${category}</h2>`;
-
-                    const grid = document.createElement('div');
-                    grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8';
-
-                    categoryTools.forEach(tool => {
-                        const cardLink = document.createElement('a');
-                        cardLink.href = `/${tool.folderName}/`;
-                        
-                        const cardWrapper = document.createElement('div');
-                        cardWrapper.className = 'tool-card animate-on-scroll rounded-xl shadow-lg transition-all duration-300';
-                        cardWrapper.style.cssText = `background-color: var(--card-bg); border: 1px solid var(--border-color); transform-style: preserve-3d;`;
-
-                        cardWrapper.innerHTML = `
-                            <div class="p-6 h-full flex flex-col justify-between" style="transform: translateZ(20px);">
-                                <div>
-                                    <h3 class="text-xl font-bold mb-2" style="color: var(--text-color);">${tool.name}</h3>
-                                    <p class="text-sm leading-relaxed" style="color: var(--subtle-text);">${tool.description}</p>
-                                </div>
-                                <div class="text-right mt-6"><span class="font-semibold gradient-text">Use Now →</span></div>
-                            </div>`;
-                        cardLink.appendChild(cardWrapper);
-                        grid.appendChild(cardLink);
-                    });
-                    
-                    section.appendChild(grid);
-                    container.appendChild(section);
-                }
-            });
-        }
-
-        function initScrollAnimations() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); } });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-            
-            const sectionObserver = new IntersectionObserver((entries) => {
-                 entries.forEach(entry => {
-                    const id = entry.target.getAttribute('id');
-                    const link = document.querySelector(`.category-link[href="#${id}"]`);
-                    if(link) {
-                        if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-                            document.querySelectorAll('.category-link.active').forEach(l => { l.classList.remove('active'); l.style.color = "var(--subtle-text)"; });
-                            link.classList.add('active'); link.style.color = "white";
-                        } else {
-                            link.classList.remove('active'); link.style.color = "var(--subtle-text)";
-                        }
-                    }
-                 });
-            }, { rootMargin: "-30% 0px -60% 0px", threshold: 0.1});
-            document.querySelectorAll('section[id^="category-"]').forEach(section => sectionObserver.observe(section));
-        }
-        
-        tsParticles.load("particles-js", {
-            fpsLimit: 60,
-            interactivity: { events: { onHover: { enable: true, mode: "repulse" }, resize: true }, modes: { repulse: { distance: 100, duration: 0.4 } } },
-            particles: {
-                color: { value: "#888888" },
-                links: { color: "#888888", distance: 150, enable: true, opacity: 0.2, width: 1 },
-                collisions: { enable: true },
-                move: { direction: "none", enable: true, outModes: { default: "bounce" }, random: false, speed: 1, straight: false },
-                number: { density: { enable: true, area: 800 }, value: 50 },
-                opacity: { value: 0.2 },
-                shape: { type: "circle" },
-                size: { value: { min: 1, max: 4 } }
-            },
-            detectRetina: true
-        });
+        const themeToggleBtn=document.getElementById("theme-toggle"),darkIcon=document.getElementById("theme-toggle-dark-icon"),lightIcon=document.getElementById("theme-toggle-light-icon");localStorage.getItem("color-theme")==="dark"||!("color-theme"in localStorage)&&window.matchMedia("(prefers-color-scheme: dark)").matches?(document.documentElement.classList.add("dark"),lightIcon.classList.remove("hidden")):(document.documentElement.classList.remove("dark"),darkIcon.classList.remove("hidden")),themeToggleBtn.addEventListener("click",()=>{darkIcon.classList.toggle("hidden"),lightIcon.classList.toggle("hidden"),document.documentElement.classList.toggle("dark");const e=document.documentElement.classList.contains("dark")?"dark":"light";localStorage.setItem("color-theme",e)});const headlineText="The Future of Web Tools is Here.",headlineEl=document.getElementById("typing-headline");let charIndex=0;function type(){charIndex<headlineText.length&&(headlineEl.textContent+=headlineText.charAt(charIndex),charIndex++,setTimeout(type,100))}function populateHeader(e,t){const n=document.getElementById("category-nav");e.forEach(e=>{t.some(t=>t.category===e)&&(n.innerHTML+=`<a href="#category-${e.replace(/\s+/g,"-")}" class="category-link px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-300" style="color: var(--subtle-text);">${e}</a>`)})}function renderTools(e,t,n){e.forEach(e=>{const o=t.filter(t=>t.category===e).sort((e,t)=>e.order-t.order);if(o.length>0){const t=document.createElement("section");t.id="category-"+e.replace(/\s+/g,"-"),t.className="mb-20 animate-on-scroll",t.innerHTML=`<h2 class="text-3xl font-bold mb-8">${e}</h2>`;const l=document.createElement("div");l.className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8",o.forEach(e=>{l.innerHTML+=`<a href="/${e.folderName}/"><div class="tool-card animate-on-scroll rounded-xl shadow-lg transition-all duration-300" style="background-color: var(--card-bg); border: 1px solid var(--border-color); transform-style: preserve-3d;"><div class="p-6 h-full flex flex-col justify-between" style="transform: translateZ(20px);"><div><h3 class="text-xl font-bold mb-2" style="color: var(--text-color);">${e.name}</h3><p class="text-sm leading-relaxed" style="color: var(--subtle-text);">${e.description}</p></div><div class="text-right mt-6"><span class="font-semibold gradient-text">Use Now →</span></div></div></div></a>`}),t.appendChild(l),n.appendChild(t)}})}function initScrollAnimations(){const e=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add("visible")})},{threshold:.1});document.querySelectorAll(".animate-on-scroll").forEach(t=>e.observe(t));const t=new IntersectionObserver(e=>{e.forEach(e=>{const t=e.target.getAttribute("id"),n=document.querySelector(`.category-link[href="#${t}"]`);n&&(e.isIntersecting&&e.intersectionRatio>.5?(document.querySelectorAll(".category-link.active").forEach(e=>{e.classList.remove("active"),e.style.color="var(--subtle-text)"}),n.classList.add("active"),n.style.color="white"):(n.classList.remove("active"),n.style.color="var(--subtle-text)"))})},{rootMargin:"-30% 0px -60% 0px",threshold:.1});document.querySelectorAll('section[id^="category-"]').forEach(e=>t.observe(e))}document.addEventListener("DOMContentLoaded",()=>{type(),fetch("/api/data").then(e=>e.json()).then(e=>{const t=document.getElementById("tools-container");t.innerHTML="",e.tools&&0!==e.tools.length?(populateHeader(e.categories,e.tools),renderTools(e.categories,e.tools,t),initScrollAnimations(),VanillaTilt.init(document.querySelectorAll(".tool-card"),{max:15,speed:400,glare:!0,"max-glare":.5})):t.innerHTML=`<div class="text-center p-8 rounded-lg" style="background-color: var(--card-bg); border: 1px solid var(--border-color);"><p class="text-lg">No tools available yet. Please add some from the admin panel.</p></div>`}).catch(e=>{console.error("Failed to fetch tools:",e),document.getElementById("tools-container").innerHTML=`<div class="text-center p-8 rounded-lg bg-red-100 text-red-700"><p class="text-lg">Failed to load tools. Please try again later.</p></div>`})}),tsParticles.load("particles-js",{fpsLimit:60,interactivity:{events:{onHover:{enable:!0,mode:"repulse"},resize:!0},modes:{repulse:{distance:100,duration:.4}}},particles:{color:{value:"#888888"},links:{color:"#888888",distance:150,enable:!0,opacity:.2,width:1},collisions:{enable:!0},move:{direction:"none",enable:!0,outModes:{default:"bounce"},random:!1,speed:1,straight:!1},number:{density:{enable:!0,area:800},value:50},opacity:{value:.2},shape:{type:"circle"},size:{value:{min:1,max:4}}},detectRetina:!0});
     </script>
 </body>
 </html>
